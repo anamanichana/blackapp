@@ -2,7 +2,11 @@
 let loadingMessages = [
     'INITIALIZING GHOST PROTOCOL...',
     'ESTABLISHING ENCRYPTED TUNNEL...',
-    'BYPASSING SECURITY FIREWALLS...'
+    'BYPASSING SECURITY FIREWALLS...',
+    'AUTHENTICATING CREDENTIALS...',
+    'CONNECTING TO SECURE NETWORK...',
+    'LOADING INTERFACE MODULES...',
+    'FINALIZING CONNECTION...'
 ];
 
 let currentMessageIndex = 0;
@@ -140,22 +144,37 @@ function simulateLoading() {
     const loadingText = document.getElementById('loading-text');
     const progressBar = document.getElementById('loading-progress');
     
+    // Show loading screen
+    loadingScreen.style.display = 'flex';
+    
     const interval = setInterval(() => {
-        loadingProgress += Math.random() * 15 + 5;
+        // Update progress
+        loadingProgress += Math.random() * 12 + 8;
+        
+        // Update progress bar
+        progressBar.style.width = Math.min(loadingProgress, 100) + '%';
+        
+        // Update loading message
+        if (loadingProgress > (currentMessageIndex + 1) * (100 / loadingMessages.length)) {
+            currentMessageIndex = Math.min(currentMessageIndex + 1, loadingMessages.length - 1);
+            loadingText.textContent = loadingMessages[currentMessageIndex];
+        }
         
         if (loadingProgress >= 100) {
             loadingProgress = 100;
+            progressBar.style.width = '100%';
+            loadingText.textContent = 'ACCESS GRANTED - WELCOME TO THE NETWORK';
             
             setTimeout(() => {
                 loadingScreen.classList.add('hidden');
                 setTimeout(() => {
                     loadingScreen.style.display = 'none';
                 }, 500);
-            }, 500);
+            }, 800);
             
             clearInterval(interval);
         }
-    }, 200);
+    }, 300);
 }
 
 window.addEventListener('message', function(event) {
@@ -165,15 +184,23 @@ window.addEventListener('message', function(event) {
         document.getElementById('app-window').style.display = 'none';
         document.getElementById('login-window').classList.add('fade-in');
     } else if (event.data.action === 'showApp') {
+        // Start loading sequence
+        simulateLoading();
+        
+        // Set user data
         username = event.data.username;
         playerGang = event.data.playerGang;
         playerIsManager = event.data.isManager;
         playerIsHighAuthority = event.data.isHighAuthority;
 
-        document.getElementById('login-window').style.display = 'none';
-        document.getElementById('app-window').style.display = 'flex';
-        document.getElementById('app-window').classList.add('fade-in');
-        showApp(event.data.isManager, event.data.isHighAuthority);
+        // Show app after loading completes
+        setTimeout(() => {
+            document.getElementById('login-window').style.display = 'none';
+            document.getElementById('app-window').style.display = 'flex';
+            document.getElementById('app-window').classList.add('fade-in');
+            showApp(event.data.isManager, event.data.isHighAuthority);
+        }, 3000); // Adjust timing based on loading duration
+        
     } else if (event.data.action === 'loginFailed') {
         document.getElementById('login_error').innerHTML = '<i class="fas fa-exclamation-triangle"></i> ACCESS DENIED - INVALID CREDENTIALS';
     } else if (event.data.action === 'hideApp') {
