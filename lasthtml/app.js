@@ -75,7 +75,7 @@ function loadAllowedGangs() {
     .then(response => response.json())
     .then(gangs => {
         const gangSelector = document.getElementById('targetGang');
-        gangSelector.innerHTML = '<option value="">-- Select Target --</option>';
+        gangSelector.innerHTML = '<option value="">-- SELECT TARGET --</option>';
         gangs.forEach(gang => {
             gangSelector.innerHTML += `<option value="${gang}">${gang}</option>`;
         });
@@ -223,15 +223,15 @@ function showApp(isManager, isHighAuthority) {
     document.body.classList.add('visible');
 
     let sidebarHTML = `
-        <button onclick="showTab('orders')" class="slide-in">
-            <i class="fas fa-shopping-cart"></i> Asset Requests
+        <button onclick="showTab('orders')" class="slide-in active">
+            <i class="fas fa-shopping-cart"></i> Asset Orders
         </button>
     `;
 
     if (isManager) {
         sidebarHTML += `
             <button onclick="showTab('manager')" class="slide-in">
-                <i class="fas fa-cogs"></i> Order Management
+                <i class="fas fa-cogs"></i> Operations
             </button>
         `;
     }
@@ -239,14 +239,14 @@ function showApp(isManager, isHighAuthority) {
     if (isHighAuthority) {
         sidebarHTML += `
             <button onclick="showTab('approved')" class="slide-in">
-                <i class="fas fa-check-circle"></i> Approved Orders
+                <i class="fas fa-check-circle"></i> Security
             </button>
         `;
     }
 
     sidebarHTML += `
         <button onclick="showTab('chat')" class="slide-in">
-            <i class="fas fa-comments"></i> Secure Comms
+            <i class="fas fa-comments"></i> Communications
         </button>
     `;
 
@@ -255,37 +255,43 @@ function showApp(isManager, isHighAuthority) {
 }
 
 function showTab(tab) {
+    // Update active sidebar button
+    document.querySelectorAll('.sidebar button').forEach(btn => btn.classList.remove('active'));
+    document.querySelector(`.sidebar button[onclick="showTab('${tab}')"]`).classList.add('active');
+    
     const mainContent = document.getElementById('main-content');
     
     if (tab === 'orders') {
         mainContent.innerHTML = `
             <div class="fade-in">
-                <h2><i class="fas fa-file-contract"></i> Asset Request Terminal</h2>
+                <h2><i class="fas fa-file-contract"></i> ASSET FORM</h2>
                 
-                <div class="info-card">
-                    <div class="flex justify-between items-center mb-3">
-                        <h3><i class="fas fa-shield-alt"></i> Encrypted Channel</h3>
-                        <span class="status-badge status-accepted"><i class="fas fa-lock"></i> SECURED</span>
+                <div class="form-container">
+                    <div class="info-card">
+                        <div class="flex justify-between items-center mb-3">
+                            <h3><i class="fas fa-shield-alt"></i> SECURE CONNECTION</h3>
+                            <span class="status-badge status-accepted"><i class="fas fa-lock"></i> ENCRYPTED</span>
+                        </div>
+                        <p>ALL TRANSMISSIONS ARE ENCRYPTED WITH MILITARY-GRADE PROTOCOLS. ENSURE REQUEST SPECIFICATIONS ARE ACCURATE BEFORE TRANSMISSION.</p>
                     </div>
-                    <p>All transmissions are encrypted with military-grade protocols. Ensure request specifications are accurate before transmission.</p>
-                </div>
-                
-                <div class="mb-4">
-                    <label for="asset_name"><i class="fas fa-tag"></i> Asset Designation</label>
-                    <input type='text' id='asset_name' placeholder='Enter asset codename or identifier...'>
-                </div>
-                
-                <div class="mb-4">
-                    <label for="order_details"><i class="fas fa-clipboard-list"></i> Mission Parameters</label>
-                    <textarea id='order_details' rows='6' placeholder='Provide detailed specifications, quantities, and operational requirements...'></textarea>
-                    <div class="char-counter">
-                        <span id="char-count">0</span>/500 characters
+                    
+                    <div class="mb-4">
+                        <label for="asset_name"><i class="fas fa-tag"></i> Asset Name</label>
+                        <input type='text' id='asset_name' placeholder='IGNITION 7G8'>
                     </div>
+                    
+                    <div class="mb-4">
+                        <label for="order_details"><i class="fas fa-clipboard-list"></i> Order Details</label>
+                        <textarea id='order_details' rows='6' placeholder='TO MY GANG LET ME HOLD THE RIFLE BACK , 200 300 MAGS, 100 PROTECTION AND 100 PISTOL MAGS. APPRECIATE THAT BIG DOG ESPECIALLY I USE PISTOL MAGS THE MOST BECAUSE I SPEND ALOT OF TIME DOING JOBS THAT REQUIRE PISTOL MAGS THANK YOU VERY MUCH APPRECIATE IT'></textarea>
+                        <div class="char-counter">
+                            <span id="char-count">0</span>/500 CHARACTERS
+                        </div>
+                    </div>
+                    
+                    <button onclick='submitOrder()' class="w-full">
+                        <i class="fas fa-paper-plane"></i> Submit Order
+                    </button>
                 </div>
-                
-                <button onclick='submitOrder()' class="w-full">
-                    <i class="fas fa-paper-plane"></i> Transmit Request
-                </button>
             </div>
         `;
         
@@ -303,10 +309,10 @@ function showTab(tab) {
     } else if (tab === 'manager') {
         mainContent.innerHTML = `
             <div class="fade-in">
-                <h2><i class="fas fa-tasks"></i> Order Management Console</h2>
+                <h2><i class="fas fa-tasks"></i> ORDER MANAGEMENT CONSOLE</h2>
                 <div class="loading-state">
                     <div class="spinner"></div>
-                    <p>Scanning for pending operations...</p>
+                    <p>SCANNING FOR PENDING OPERATIONS...</p>
                 </div>
             </div>
         `;
@@ -320,43 +326,43 @@ function showTab(tab) {
             
             let content = `
                 <div class="fade-in">
-                    <h2><i class="fas fa-tasks"></i> Order Management Console</h2>
-                    <div class="info-card">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <h3><i class="fas fa-hourglass-half"></i> Pending Operations</h3>
-                                <p>Review and authorize incoming asset requests</p>
-                            </div>
-                            <div class="text-2xl font-bold text-center">
-                                ${pendingOrders.length}
+                    <h2><i class="fas fa-tasks"></i> ORDER MANAGEMENT CONSOLE</h2>
+                    <div class="form-container">
+                        <div class="info-card">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <h3><i class="fas fa-hourglass-half"></i> PENDING OPERATIONS</h3>
+                                    <p>REVIEW AND AUTHORIZE INCOMING ASSET REQUESTS</p>
+                                </div>
+                                <div class="text-2xl font-bold text-center">
+                                    ${pendingOrders.length}
+                                </div>
                             </div>
                         </div>
-                    </div>
             `;
             
             if (pendingOrders.length === 0) {
                 content += `
                     <div class="empty-state">
                         <i class="fas fa-inbox"></i>
-                        <h3>No Pending Operations</h3>
-                        <p>All requests have been processed. New operations will appear here for authorization.</p>
+                        <h3>NO PENDING OPERATIONS</h3>
+                        <p>ALL REQUESTS HAVE BEEN PROCESSED. NEW OPERATIONS WILL APPEAR HERE FOR AUTHORIZATION.</p>
                     </div>
                 `;
             } else {
                 content += `
-                    <div class="rounded-xl overflow-hidden shadow-lg">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th><i class="fas fa-user"></i> Operative</th>
-                                    <th><i class="fas fa-users"></i> Faction</th>
-                                    <th><i class="fas fa-box"></i> Asset</th>
-                                    <th><i class="fas fa-info-circle"></i> Details</th>
-                                    <th><i class="fas fa-flag"></i> Status</th>
-                                    <th><i class="fas fa-cog"></i> Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-user"></i> OPERATIVE</th>
+                                <th><i class="fas fa-users"></i> FACTION</th>
+                                <th><i class="fas fa-box"></i> ASSET</th>
+                                <th><i class="fas fa-info-circle"></i> DETAILS</th>
+                                <th><i class="fas fa-flag"></i> STATUS</th>
+                                <th><i class="fas fa-cog"></i> ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
                 `;
                 
                 pendingOrders.forEach(order => {
@@ -370,10 +376,10 @@ function showTab(tab) {
                             <td>
                                 <div class="flex gap-2">
                                     <button onclick="updateOrder(${order.id}, 'Accepted')" class="btn-success text-sm">
-                                        <i class="fas fa-check"></i> Approve
+                                        <i class="fas fa-check"></i> APPROVE
                                     </button>
                                     <button onclick="updateOrder(${order.id}, 'Rejected')" class="btn-danger text-sm">
-                                        <i class="fas fa-times"></i> Deny
+                                        <i class="fas fa-times"></i> DENY
                                     </button>
                                 </div>
                             </td>
@@ -382,25 +388,26 @@ function showTab(tab) {
                 });
                 
                 content += `
-                            </tbody>
-                        </table>
-                    </div>
+                        </tbody>
+                    </table>
                 `;
             }
             
-            content += `</div>`;
+            content += `</div></div>`;
             mainContent.innerHTML = content;
         }).catch(error => {
             mainContent.innerHTML = `
                 <div class="fade-in">
-                    <h2><i class="fas fa-tasks"></i> Order Management Console</h2>
-                    <div class="empty-state">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <h3>Connection Error</h3>
-                        <p>Unable to establish secure connection. Check network status and retry.</p>
-                        <button onclick="showTab('manager')" class="mt-3">
-                            <i class="fas fa-redo"></i> Retry Connection
-                        </button>
+                    <h2><i class="fas fa-tasks"></i> ORDER MANAGEMENT CONSOLE</h2>
+                    <div class="form-container">
+                        <div class="empty-state">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <h3>CONNECTION ERROR</h3>
+                            <p>UNABLE TO ESTABLISH SECURE CONNECTION. CHECK NETWORK STATUS AND RETRY.</p>
+                            <button onclick="showTab('manager')" class="mt-3">
+                                <i class="fas fa-redo"></i> RETRY CONNECTION
+                            </button>
+                        </div>
                     </div>
                 </div>
             `;
@@ -409,10 +416,10 @@ function showTab(tab) {
     } else if (tab === 'approved') {
         mainContent.innerHTML = `
             <div class="fade-in">
-                <h2><i class="fas fa-check-circle"></i> Approved Operations</h2>
+                <h2><i class="fas fa-check-circle"></i> APPROVED OPERATIONS</h2>
                 <div class="loading-state">
                     <div class="spinner"></div>
-                    <p>Loading completed operations...</p>
+                    <p>LOADING COMPLETED OPERATIONS...</p>
                 </div>
             </div>
         `;
@@ -424,43 +431,43 @@ function showTab(tab) {
         }).then(response => response.json()).then(orders => {
             let content = `
                 <div class="fade-in">
-                    <h2><i class="fas fa-check-circle"></i> Approved Operations</h2>
-                    <div class="info-card">
-                        <div class="flex justify-between items-center">
-                            <div>
-                                <h3><i class="fas fa-clipboard-check"></i> Completed Requests</h3>
-                                <p>Successfully authorized asset operations</p>
-                            </div>
-                            <div class="text-2xl font-bold text-center">
-                                ${orders.length}
+                    <h2><i class="fas fa-check-circle"></i> APPROVED OPERATIONS</h2>
+                    <div class="form-container">
+                        <div class="info-card">
+                            <div class="flex justify-between items-center">
+                                <div>
+                                    <h3><i class="fas fa-clipboard-check"></i> COMPLETED REQUESTS</h3>
+                                    <p>SUCCESSFULLY AUTHORIZED ASSET OPERATIONS</p>
+                                </div>
+                                <div class="text-2xl font-bold text-center">
+                                    ${orders.length}
+                                </div>
                             </div>
                         </div>
-                    </div>
             `;
             
             if (orders.length === 0) {
                 content += `
                     <div class="empty-state">
                         <i class="fas fa-clipboard"></i>
-                        <h3>No Approved Operations</h3>
-                        <p>Authorized operations will be displayed here for review and management.</p>
+                        <h3>NO APPROVED OPERATIONS</h3>
+                        <p>AUTHORIZED OPERATIONS WILL BE DISPLAYED HERE FOR REVIEW AND MANAGEMENT.</p>
                     </div>
                 `;
             } else {
                 content += `
-                    <div class="rounded-xl overflow-hidden shadow-lg">
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th><i class="fas fa-user"></i> Operative</th>
-                                    <th><i class="fas fa-users"></i> Faction</th>
-                                    <th><i class="fas fa-box"></i> Asset</th>
-                                    <th><i class="fas fa-info-circle"></i> Details</th>
-                                    <th><i class="fas fa-flag"></i> Status</th>
-                                    <th><i class="fas fa-cog"></i> Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-user"></i> OPERATIVE</th>
+                                <th><i class="fas fa-users"></i> FACTION</th>
+                                <th><i class="fas fa-box"></i> ASSET</th>
+                                <th><i class="fas fa-info-circle"></i> DETAILS</th>
+                                <th><i class="fas fa-flag"></i> STATUS</th>
+                                <th><i class="fas fa-cog"></i> ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
                 `;
                 
                 orders.forEach(order => {
@@ -473,7 +480,7 @@ function showTab(tab) {
                             <td><span class="status-badge status-accepted"><i class="fas fa-check"></i> ${order.status}</span></td>
                             <td>
                                 <button onclick="deleteOrder(${order.id})" class="btn-danger text-sm">
-                                    <i class="fas fa-trash"></i> Purge
+                                    <i class="fas fa-trash"></i> PURGE
                                 </button>
                             </td>
                         </tr>
@@ -481,25 +488,26 @@ function showTab(tab) {
                 });
                 
                 content += `
-                            </tbody>
-                        </table>
-                    </div>
+                        </tbody>
+                    </table>
                 `;
             }
             
-            content += `</div>`;
+            content += `</div></div>`;
             mainContent.innerHTML = content;
         }).catch(error => {
             mainContent.innerHTML = `
                 <div class="fade-in">
-                    <h2><i class="fas fa-check-circle"></i> Approved Operations</h2>
-                    <div class="empty-state">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <h3>Connection Error</h3>
-                        <p>Unable to retrieve approved operations. Check network status and retry.</p>
-                        <button onclick="showTab('approved')" class="mt-3">
-                            <i class="fas fa-redo"></i> Retry Connection
-                        </button>
+                    <h2><i class="fas fa-check-circle"></i> APPROVED OPERATIONS</h2>
+                    <div class="form-container">
+                        <div class="empty-state">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <h3>CONNECTION ERROR</h3>
+                            <p>UNABLE TO RETRIEVE APPROVED OPERATIONS. CHECK NETWORK STATUS AND RETRY.</p>
+                            <button onclick="showTab('approved')" class="mt-3">
+                                <i class="fas fa-redo"></i> RETRY CONNECTION
+                            </button>
+                        </div>
                     </div>
                 </div>
             `;
@@ -509,44 +517,44 @@ function showTab(tab) {
 
         mainContent.innerHTML = `
             <div class="fade-in chat-container">
-                <h2><i class="fas fa-satellite-dish"></i> Secure Communications</h2>
+                <h2><i class="fas fa-satellite-dish"></i> SECURE COMMUNICATIONS</h2>
                 
                 <div class="chat-type-selector">
                     ${isGangOnly ? `
                         <button class="chat-type-btn active" data-type="gang" onclick="setChatType('gang')">
-                            <i class="fas fa-users"></i> Faction Channel
+                            <i class="fas fa-users"></i> FACTION CHANNEL
                         </button>
                     ` : `
                         <button class="chat-type-btn ${currentChatType === 'public' ? 'active' : ''}" data-type="public" onclick="setChatType('public')">
-                            <i class="fas fa-globe"></i> Underground Network
+                            <i class="fas fa-globe"></i> UNDERGROUND NETWORK
                         </button>
                         <button class="chat-type-btn ${currentChatType === 'gang' ? 'active' : ''}" data-type="gang" onclick="setChatType('gang')">
-                            <i class="fas fa-users"></i> Faction Channel
+                            <i class="fas fa-users"></i> FACTION CHANNEL
                         </button>
                         <button class="chat-type-btn ${currentChatType === 'private' ? 'active' : ''}" data-type="private" onclick="setChatType('private')">
-                            <i class="fas fa-lock"></i> Encrypted Direct
+                            <i class="fas fa-lock"></i> ENCRYPTED DIRECT
                         </button>
                     `}
                 </div>
                 
                 <div id="gang-selector" style="display: ${currentChatType === 'private' ? 'block' : 'none'};">
-                    <label for="targetGang"><i class="fas fa-crosshairs"></i> Select Target Faction</label>
+                    <label for="targetGang"><i class="fas fa-crosshairs"></i> SELECT TARGET FACTION</label>
                     <select id="targetGang" onchange="loadChatHistory()">
-                        <option value="">-- Scanning Networks --</option>
+                        <option value="">-- SCANNING NETWORKS --</option>
                     </select>
                 </div>
                 
                 <div class="chat-messages" id="chatMessages">
                     <div class="loading-state">
                         <div class="spinner"></div>
-                        <p>Decrypting messages...</p>
+                        <p>DECRYPTING MESSAGES...</p>
                     </div>
                 </div>
                 
                 <div class="chat-input">
-                    <input type="text" id="chatMessageInput" placeholder="Type encrypted message..." onkeypress="if(event.key==='Enter') sendChatMessage()">
+                    <input type="text" id="chatMessageInput" placeholder="TYPE ENCRYPTED MESSAGE..." onkeypress="if(event.key==='Enter') sendChatMessage()">
                     <button onclick="sendChatMessage()">
-                        <i class="fas fa-paper-plane"></i> Transmit
+                        <i class="fas fa-paper-plane"></i> TRANSMIT
                     </button>
                 </div>
             </div>
@@ -576,33 +584,35 @@ function submitOrder() {
         document.getElementById('main-content').innerHTML = `
             <div class="success-message fade-in">
                 <i class="fas fa-check-circle"></i>
-                <h2>Request Transmitted Successfully</h2>
-                <p>Your asset request has been encrypted and transmitted to our operations center. The request is now pending authorization.</p>
+                <h2>REQUEST TRANSMITTED SUCCESSFULLY</h2>
+                <p>YOUR ASSET REQUEST HAS BEEN ENCRYPTED AND TRANSMITTED TO OUR OPERATIONS CENTER. THE REQUEST IS NOW PENDING AUTHORIZATION.</p>
                 <div class="info-card mt-4 mb-4">
-                    <h3><i class="fas fa-info-circle"></i> Operation Details</h3>
-                    <p><strong>Asset:</strong> ${assetName}</p>
-                    <p><strong>Operation ID:</strong> #${Math.random().toString(36).substr(2, 9).toUpperCase()}</p>
+                    <h3><i class="fas fa-info-circle"></i> OPERATION DETAILS</h3>
+                    <p><strong>ASSET:</strong> ${assetName}</p>
+                    <p><strong>OPERATION ID:</strong> #${Math.random().toString(36).substr(2, 9).toUpperCase()}</p>
                 </div>
-                <p class="mb-4">You will receive notification once your request has been processed by authorized personnel.</p>
+                <p class="mb-4">YOU WILL RECEIVE NOTIFICATION ONCE YOUR REQUEST HAS BEEN PROCESSED BY AUTHORIZED PERSONNEL.</p>
                 <div class="flex gap-3 justify-center">
                     <button onclick="closeApp()" class="btn-secondary">
-                        <i class="fas fa-power-off"></i> Close Terminal
+                        <i class="fas fa-power-off"></i> CLOSE TERMINAL
                     </button>
                     <button onclick="showTab('orders')">
-                        <i class="fas fa-plus"></i> Submit New Request
+                        <i class="fas fa-plus"></i> SUBMIT NEW REQUEST
                     </button>
                 </div>
             </div>
         `;
     }).catch(error => {
         document.getElementById('main-content').innerHTML = `
-            <div class="empty-state">
-                <i class="fas fa-exclamation-triangle"></i>
-                <h3>Transmission Failed</h3>
-                <p>Unable to transmit your request. Check network connection and retry.</p>
-                <button onclick="showTab('orders')" class="mt-3">
-                    <i class="fas fa-redo"></i> Retry Transmission
-                </button>
+            <div class="form-container">
+                <div class="empty-state">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>TRANSMISSION FAILED</h3>
+                    <p>UNABLE TO TRANSMIT YOUR REQUEST. CHECK NETWORK CONNECTION AND RETRY.</p>
+                    <button onclick="showTab('orders')" class="mt-3">
+                        <i class="fas fa-redo"></i> RETRY TRANSMISSION
+                    </button>
+                </div>
             </div>
         `;
     });
